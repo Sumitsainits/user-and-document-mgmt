@@ -123,13 +123,15 @@ yarn start:prod
 
 ##### User Management
 
-`GET /users` - List all users (Admin only).
-`PATCH /users/:id` - Update user details (Admin only).
-`DELETE /users/:id` - Delete a user (Admin only).
+`POST /admin/users` - Create admin user.
+`PATCH /admin/users/:userId` - Update user role.
+`GET /users` - List all users.
+`PATCH /users/:id` - Update user details.
+`DELETE /users/:id` - Delete a user.
 
 ##### Document Management
 
-`POST /documents/upload` - Upload a document.
+`POST /documents` - Upload a document.
 `GET /documents/:id` - Retrieve a document.
 `DELETE /documents/:id` - Delete a document.
 

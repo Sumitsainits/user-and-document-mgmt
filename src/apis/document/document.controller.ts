@@ -44,7 +44,7 @@ export class DocumentController {
     file: Express.Multer.File,
     @Req() request: AuthenticatedRequest,
   ): Promise<DocumentEntity> {
-    return this.documentService.uploadDocumentToS3(file, request.user.id);
+    return this.documentService.uploadDocument(file, request.user.id);
   }
 
   @Get()

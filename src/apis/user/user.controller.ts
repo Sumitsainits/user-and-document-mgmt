@@ -12,10 +12,10 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RoleGuard } from '../shared/guards/role.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/user.dto';
 import { Roles } from '../../shared/utils/constants';
 import { SetRole } from '../shared/decorators/role.decortor';
+import { AuthGuard } from '../shared/guards/auth.guard';
 
 @Controller('users')
 @UseGuards(AuthGuard)
@@ -35,16 +35,6 @@ export class UserController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
-  }
-
-  @Patch(':id/role')
-  @UseGuards(RoleGuard)
-  @SetRole(Roles.ADMIN)
-  async udpateRole(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.userService.updateRole(id, updateUserDto.role);
   }
 
   @Delete(':id')

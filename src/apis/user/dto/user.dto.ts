@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsEnum,
 } from 'class-validator';
-import { Roles } from 'src/shared/utils/constants';
+import { Roles } from '../../../shared/utils/constants';
 
 export class LoginUserDto {
   @IsEmail({})

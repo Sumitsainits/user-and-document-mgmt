@@ -1,22 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialMigration1732510879495 implements MigrationInterface {
-  name = 'InitialMigration';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Ensure pgcrypto extension for UUID generation
     await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto"');
-
-    await queryRunner.query(`
-      CREATE TABLE IF NOT EXISTS "documents" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-        "fileName" character varying,
-        "uploadedBy" uuid NOT NULL REFERENCES "users"("id"),
-        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-        CONSTRAINT "PK_documents_id" PRIMARY KEY ("id")
-      );
-    `);
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "users" (
@@ -30,6 +17,19 @@ export class InitialMigration1732510879495 implements MigrationInterface {
         "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "UQ_email" UNIQUE ("email"),
         CONSTRAINT "PK_user_id" PRIMARY KEY ("id")
+      );
+    `);
+
+    await queryRunner.query(`
+      CREATE TABLE IF NOT EXISTS "documents" (
+        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "fileName" character varying,
+        "content" BYTEA NOT NULL,
+        "isProcessed" BOOLEAN DEFAULT FALSE,
+        "uploadedBy" uuid NOT NULL REFERENCES "users"("id"),
+        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+        CONSTRAINT "PK_documents_id" PRIMARY KEY ("id")
       );
     `);
   }

@@ -2,35 +2,35 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { DocumentEntity } from '../../entities/document';
-import { v4 } from 'uuid';
-import { ConfigService } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
-import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class DocumentService {
   constructor(
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
-    private readonly s3Service: S3Service,
   ) {}
 
-  async uploadDocumentToS3(
+  async uploadDocument(
     file: Express.Multer.File,
     userId: string,
   ): Promise<DocumentEntity> {
-    const fileKey = `${v4()}-${file.originalname}`;
+    const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
+    if (file.buffer.length > MAX_FILE_SIZE) {
+      throw new Error('File size exceeds the 2 MB limit');
+    }
+
     try {
-      await this.s3Service.upload(fileKey, file.buffer, file.mimetype);
       const fileEntity = this.documentRepository.create({
-        fileName: fileKey,
+        fileName: file.originalname,
+        content: file.buffer,
         uploadedBy: userId,
       });
 
       return this.documentRepository.save(fileEntity);
     } catch (error) {
       throw new HttpException(
-        'Failed to upload file to S3',
+        'Failed to upload file.',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -49,8 +49,6 @@ export class DocumentService {
   }
 
   async remove(id: string): Promise<DeleteResult> {
-    const file = await this.findOne(id);
-    await this.s3Service.remove(file.fileName);
     return this.documentRepository.delete(id);
   }
 }

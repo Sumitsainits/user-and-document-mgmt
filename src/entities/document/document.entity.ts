@@ -14,6 +14,12 @@ export class DocumentEntity {
   @Column({ nullable: true })
   fileName: string;
 
+  @Column({ default: false })
+  isProcessed: boolean;
+
+  @Column('bytea')
+  content: Buffer;
+
   @Column({ nullable: true })
   uploadedBy: string;
 

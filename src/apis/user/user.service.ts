@@ -43,13 +43,14 @@ export class UserService {
     return user;
   }
 
-  async register(user: CreateUserDto): Promise<UserEntity> {
+  async register(user: CreateUserDto, isAdmin = false): Promise<UserEntity> {
     const hashedPassword = await hash(user.password, 10);
 
     try {
       const result = await this.userRepo.save({
         ...user,
         password: hashedPassword,
+        role: isAdmin ? Roles.ADMIN : Roles.VIEWER,
       });
 
       return result;
@@ -60,6 +61,7 @@ export class UserService {
       );
     }
   }
+
   async remove(id: string): Promise<void> {
     await this.userRepo.softDelete({ id });
   }
